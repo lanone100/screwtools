@@ -3,480 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>螺絲規格與攻牙孔徑計算器</title>
+    <title>螺絲規格計算器 | Công cụ tính toán kích thước vít</title>
     <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            font-family: 'Microsoft JhengHei', Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        h1 {
-            color: #333;
+
+        .header {
             text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
         }
-        .container {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        .lang-switch {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .lang-btn {
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .lang-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
-        select, input, button {
-            padding: 8px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 100%;
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 8px 0;
+            color: var(--primary-color);
         }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
+
+        .formula-box {
+            background: #eff6ff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
         }
-        button:hover {
-            background-color: #45a049;
+
+        .input-group {
+            margin-bottom: 16px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .result {
-            font-weight: bold;
-            font-size: 18px;
-            margin: 10px 0;
-            color: #333;
-        }
-        .tab {
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-            border-radius: 4px 4px 0 0;
-        }
-        .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-            width: auto;
-            border-radius: 0;
-        }
-        .tab button:hover {
-            background-color: #ddd;
-        }
-        .tab button.active {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .tabcontent {
-            display: none;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-            background-color: white;
-        }
-        .show {
+
+        label {
             display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px; /* 防止iOS縮放 */
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
+        }
+
+        button.calc-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+        }
+
+        button.calc-btn:active {
+            transform: scale(0.98);
+        }
+
+        .result-area {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px dashed #cbd5e1;
+            display: none;
+        }
+
+        .result-val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .footer-note {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>螺絲規格與攻牙孔徑計算器</h1>
-    
-    <div class="tab">
-        <button class="tablinks active" onclick="openTab(event, 'metric')">公制（公厘/毫米）</button>
-        <button class="tablinks" onclick="openTab(event, 'imperial')">英制（英吋）</button>
-        <button class="tablinks" onclick="openTab(event, 'reference')">參考表格</button>
-    </div>
 
-    <div id="metric" class="tabcontent show">
-        <div class="container">
-            <h2>公制螺絲攻牙孔徑計算</h2>
-            <div>
-                <label for="metricDiameter">螺絲直徑 (mm):</label>
-                <select id="metricDiameter">
-                    <option value="1">M1</option>
-                    <option value="1.2">M1.2</option>
-                    <option value="1.6">M1.6</option>
-                    <option value="2">M2</option>
-                    <option value="2.5">M2.5</option>
-                    <option value="3">M3</option>
-                    <option value="3.5">M3.5</option>
-                    <option value="4">M4</option>
-                    <option value="5">M5</option>
-                    <option value="6">M6</option>
-                    <option value="8">M8</option>
-                    <option value="10">M10</option>
-                    <option value="12">M12</option>
-                    <option value="14">M14</option>
-                    <option value="16">M16</option>
-                    <option value="18">M18</option>
-                    <option value="20">M20</option>
-                    <option value="22">M22</option>
-                    <option value="24">M24</option>
-                    <option value="27">M27</option>
-                    <option value="30">M30</option>
-                    <option value="33">M33</option>
-                    <option value="36">M36</option>
-                    <option value="39">M39</option>
-                    <option value="42">M42</option>
-                    <option value="45">M45</option>
-                    <option value="48">M48</option>
-                    <option value="52">M52</option>
-                    <option value="56">M56</option>
-                    <option value="60">M60</option>
-                    <option value="64">M64</option>
-                </select>
-            </div>
-            <div>
-                <label for="metricPitch">螺距 (mm):</label>
-                <select id="metricPitch">
-                    <option value="0.25">0.25</option>
-                    <option value="0.35">0.35</option>
-                    <option value="0.4">0.4</option>
-                    <option value="0.45">0.45</option>
-                    <option value="0.5">0.5</option>
-                    <option value="0.6">0.6</option>
-                    <option value="0.7">0.7</option>
-                    <option value="0.75">0.75</option>
-                    <option value="0.8">0.8</option>
-                    <option value="1">1</option>
-                    <option value="1.25">1.25</option>
-                    <option value="1.5">1.5</option>
-                    <option value="1.75">1.75</option>
-                    <option value="2">2</option>
-                    <option value="2.5">2.5</option>
-                    <option value="3">3</option>
-                    <option value="3.5">3.5</option>
-                    <option value="4">4</option>
-                    <option value="4.5">4.5</option>
-                    <option value="5">5</option>
-                    <option value="5.5">5.5</option>
-                    <option value="6">6</option>
-                </select>
-            </div>
-            <div>
-                <label for="metricThreadType">螺紋類型：</label>
-                <select id="metricThreadType">
-                    <option value="standard">標準螺紋（75%）</option>
-                    <option value="tight">緊密螺紋（85%）</option>
-                    <option value="loose">寬鬆螺紋（65%）</option>
-                </select>
-            </div>
-            <button onclick="calculateMetricDrillSize()">計算攻牙孔徑</button>
-            <div class="result" id="metricResult"></div>
+    <div class="header">
+        <div class="lang-switch">
+            <button class="lang-btn active" onclick="setLang('zh')">繁體中文</button>
+            <button class="lang-btn" onclick="setLang('vi')">Tiếng Việt</button>
         </div>
+        <h1 id="title">螺絲攻牙孔徑計算器</h1>
     </div>
 
-    <div id="imperial" class="tabcontent">
-        <div class="container">
-            <h2>英制螺絲攻牙孔徑計算</h2>
-            <div>
-                <label for="imperialSize">螺絲尺寸：</label>
-                <select id="imperialSize">
-                    <option value="0.060,80">#0-80 (0.060")</option>
-                    <option value="0.073,64">#1-64 (0.073")</option>
-                    <option value="0.073,72">#1-72 (0.073")</option>
-                    <option value="0.086,56">#2-56 (0.086")</option>
-                    <option value="0.086,64">#2-64 (0.086")</option>
-                    <option value="0.099,48">#3-48 (0.099")</option>
-                    <option value="0.099,56">#3-56 (0.099")</option>
-                    <option value="0.112,40">#4-40 (0.112")</option>
-                    <option value="0.112,48">#4-48 (0.112")</option>
-                    <option value="0.125,40">#5-40 (0.125")</option>
-                    <option value="0.125,44">#5-44 (0.125")</option>
-                    <option value="0.138,32">#6-32 (0.138")</option>
-                    <option value="0.138,40">#6-40 (0.138")</option>
-                    <option value="0.164,32">#8-32 (0.164")</option>
-                    <option value="0.164,36">#8-36 (0.164")</option>
-                    <option value="0.190,24">#10-24 (0.190")</option>
-                    <option value="0.190,32">#10-32 (0.190")</option>
-                    <option value="0.216,24">#12-24 (0.216")</option>
-                    <option value="0.216,28">#12-28 (0.216")</option>
-                    <option value="0.250,20">1/4-20 (0.250")</option>
-                    <option value="0.250,28">1/4-28 (0.250")</option>
-                    <option value="0.3125,18">5/16-18 (0.3125")</option>
-                    <option value="0.3125,24">5/16-24 (0.3125")</option>
-                    <option value="0.375,16">3/8-16 (0.375")</option>
-                    <option value="0.375,24">3/8-24 (0.375")</option>
-                    <option value="0.4375,14">7/16-14 (0.4375")</option>
-                    <option value="0.4375,20">7/16-20 (0.4375")</option>
-                    <option value="0.500,13">1/2-13 (0.500")</option>
-                    <option value="0.500,20">1/2-20 (0.500")</option>
-                    <option value="0.5625,12">9/16-12 (0.5625")</option>
-                    <option value="0.5625,18">9/16-18 (0.5625")</option>
-                    <option value="0.625,11">5/8-11 (0.625")</option>
-                    <option value="0.625,18">5/8-18 (0.625")</option>
-                    <option value="0.750,10">3/4-10 (0.750")</option>
-                    <option value="0.750,16">3/4-16 (0.750")</option>
-                    <option value="0.875,9">7/8-9 (0.875")</option>
-                    <option value="0.875,14">7/8-14 (0.875")</option>
-                    <option value="1.000,8">1-8 (1.000")</option>
-                    <option value="1.000,14">1-14 (1.000")</option>
-                </select>
-            </div>
-            <div>
-                <label for="imperialThreadType">螺紋類型：</label>
-                <select id="imperialThreadType">
-                    <option value="standard">標準螺紋（75%）</option>
-                    <option value="tight">緊密螺紋（85%）</option>
-                    <option value="loose">寬鬆螺紋（65%）</option>
-                </select>
-            </div>
-            <button onclick="calculateImperialDrillSize()">計算攻牙孔徑</button>
-            <div class="result" id="imperialResult"></div>
+    <div class="card">
+        <div class="formula-box">
+            <strong id="label-formula">計算公式：</strong><br>
+            <span id="formula-text">孔徑 (D) = 公稱直徑 (d) - 螺距 (P) × 0.75</span>
         </div>
-    </div>
 
-    <div id="reference" class="tabcontent">
-        <div class="container">
-            <h2>常用螺絲攻牙孔徑參考表</h2>
-            
-            <h3>公制（毫米）螺絲</h3>
-            <table>
-                <tr>
-                    <th>螺絲規格</th>
-                    <th>標準螺距</th>
-                    <th>攻牙孔徑 (75%)</th>
-                </tr>
-                <tr><td>M1</td><td>0.25</td><td>0.8 mm</td></tr>
-                <tr><td>M1.2</td><td>0.25</td><td>1.0 mm</td></tr>
-                <tr><td>M1.6</td><td>0.35</td><td>1.3 mm</td></tr>
-                <tr><td>M2</td><td>0.4</td><td>1.6 mm</td></tr>
-                <tr><td>M2.5</td><td>0.45</td><td>2.1 mm</td></tr>
-                <tr><td>M3</td><td>0.5</td><td>2.5 mm</td></tr>
-                <tr><td>M3.5</td><td>0.6</td><td>2.9 mm</td></tr>
-                <tr><td>M4</td><td>0.7</td><td>3.3 mm</td></tr>
-                <tr><td>M5</td><td>0.8</td><td>4.2 mm</td></tr>
-                <tr><td>M6</td><td>1.0</td><td>5.0 mm</td></tr>
-                <tr><td>M8</td><td>1.25</td><td>6.8 mm</td></tr>
-                <tr><td>M10</td><td>1.5</td><td>8.5 mm</td></tr>
-                <tr><td>M12</td><td>1.75</td><td>10.3 mm</td></tr>
-                <tr><td>M14</td><td>2.0</td><td>12.0 mm</td></tr>
-                <tr><td>M16</td><td>2.0</td><td>14.0 mm</td></tr>
-                <tr><td>M20</td><td>2.5</td><td>17.5 mm</td></tr>
-                <tr><td>M24</td><td>3.0</td><td>21.0 mm</td></tr>
-                <tr><td>M30</td><td>3.5</td><td>26.5 mm</td></tr>
-                <tr><td>M36</td><td>4.0</td><td>32.0 mm</td></tr>
-                <tr><td>M42</td><td>4.5</td><td>37.5 mm</td></tr>
-                <tr><td>M48</td><td>5.0</td><td>43.0 mm</td></tr>
-                <tr><td>M56</td><td>5.5</td><td>50.5 mm</td></tr>
-                <tr><td>M64</td><td>6.0</td><td>58.0 mm</td></tr>
-            </table>
-            
-            <h3>英制螺絲</h3>
-            <table>
-                <tr>
-                    <th>螺絲規格</th>
-                    <th>TPI</th>
-                    <th>攻牙孔徑 (75%)</th>
-                </tr>
-                <tr><td>#4-40</td><td>40</td><td>#43 (0.089")</td></tr>
-                <tr><td>#6-32</td><td>32</td><td>#36 (0.106")</td></tr>
-                <tr><td>#8-32</td><td>32</td><td>#29 (0.136")</td></tr>
-                <tr><td>#10-24</td><td>24</td><td>#25 (0.150")</td></tr>
-                <tr><td>#10-32</td><td>32</td><td>#21 (0.159")</td></tr>
-                <tr><td>1/4-20</td><td>20</td><td>#7 (0.201")</td></tr>
-                <tr><td>5/16-18</td><td>18</td><td>F (0.257")</td></tr>
-                <tr><td>3/8-16</td><td>16</td><td>5/16" (0.312")</td></tr>
-                <tr><td>1/2-13</td><td>13</td><td>27/64" (0.422")</td></tr>
-                <tr><td>5/8-11</td><td>11</td><td>17/32" (0.531")</td></tr>
-                <tr><td>3/4-10</td><td>10</td><td>21/32" (0.656")</td></tr>
-                <tr><td>1-8</td><td>8</td><td>7/8" (0.875")</td></tr>
-            </table>
+        <div class="input-group">
+            <label id="label-diameter">螺絲規格 (M)</label>
+            <select id="diameter" onchange="updatePitch()">
+                <option value="3">M3</option>
+                <option value="4">M4</option>
+                <option value="5">M5</option>
+                <option value="6">M6</option>
+                <option value="8">M8</option>
+                <option value="10">M10</option>
+                <option value="12">M12</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label id="label-pitch">螺距 Pitch (mm)</label>
+            <input type="number" id="pitch" step="0.01" value="0.5">
+        </div>
+
+        <div class="input-group">
+            <label id="label-depth">螺紋深度百分比</label>
+            <select id="percentage">
+                <option value="0.75">75% (標準/Tiêu chuẩn)</option>
+                <option value="0.85">85% (緊密/Chặt)</option>
+                <option value="0.65">65% (寬鬆/Lỏng)</option>
+            </select>
+        </div>
+
+        <button class="calc-btn" onclick="calculate()" id="btn-calc">立即計算</button>
+
+        <div class="result-area" id="result-area">
+            <div style="text-align: center; font-weight: 600;" id="label-result-title">建議鑽孔直徑</div>
+            <div class="result-val" id="result-display">2.50 mm</div>
+            <p class="footer-note" id="result-note">此為理論參考值，實際加工請依材質調整。</p>
         </div>
     </div>
 
     <script>
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
+        const i18n = {
+            zh: {
+                title: "螺絲攻牙孔徑計算器",
+                formula: "計算公式：",
+                formulaText: "孔徑 (D) = 公稱直徑 (d) - 螺距 (P) × 深度%",
+                diameter: "螺絲規格 (M)",
+                pitch: "螺距 Pitch (mm)",
+                depth: "螺紋深度百分比",
+                btn: "立即計算",
+                resTitle: "建議鑽孔直徑",
+                note: "此為理論參考值，實際加工請依材質調整。"
+            },
+            vi: {
+                title: "Máy tính đường kính lỗ taro",
+                formula: "Công thức tính:",
+                formulaText: "Đường kính (D) = Đường kính vít (d) - Bước ren (P) × %",
+                diameter: "Quy cách vít (M)",
+                pitch: "Bước ren Pitch (mm)",
+                depth: "Tỷ lệ độ sâu ren",
+                btn: "Tính toán ngay",
+                resTitle: "Đường kính mũi khoan đề nghị",
+                note: "Đây là giá trị tham khảo lý thuyết, hãy điều chỉnh theo vật liệu thực tế."
             }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
+        };
+
+        const pitchData = {
+            "3": 0.5, "4": 0.7, "5": 0.8, "6": 1.0, "8": 1.25, "10": 1.5, "12": 1.75
+        };
+
+        function setLang(lang) {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('title').innerText = i18n[lang].title;
+            document.getElementById('label-formula').innerText = i18n[lang].formula;
+            document.getElementById('formula-text').innerText = i18n[lang].formulaText;
+            document.getElementById('label-diameter').innerText = i18n[lang].diameter;
+            document.getElementById('label-pitch').innerText = i18n[lang].pitch;
+            document.getElementById('label-depth').innerText = i18n[lang].depth;
+            document.getElementById('btn-calc').innerText = i18n[lang].btn;
+            document.getElementById('label-result-title').innerText = i18n[lang].resTitle;
+            document.getElementById('result-note').innerText = i18n[lang].note;
         }
 
-        function calculateMetricDrillSize() {
-            const diameter = parseFloat(document.getElementById("metricDiameter").value);
-            const pitch = parseFloat(document.getElementById("metricPitch").value);
-            const threadType = document.getElementById("metricThreadType").value;
-            
-            let threadPercentage;
-            switch(threadType) {
-                case "tight":
-                    threadPercentage = 0.85;
-                    break;
-                case "loose":
-                    threadPercentage = 0.65;
-                    break;
-                default:
-                    threadPercentage = 0.75;
-            }
-            
-            // 計算攻牙孔徑 = 外徑 - (螺距 * 螺紋百分比)
-            const drillSize = (diameter - (pitch * threadPercentage)).toFixed(2);
-            
-            // 顯示結果
-            document.getElementById("metricResult").innerHTML = `
-                M${diameter} x ${pitch} 螺絲的攻牙孔徑為：${drillSize} mm<br>
-                <small>（基於${threadPercentage*100}%螺紋深度）</small>
-            `;
+        function updatePitch() {
+            const d = document.getElementById('diameter').value;
+            document.getElementById('pitch').value = pitchData[d] || 0.5;
         }
 
-        function calculateImperialDrillSize() {
-            const selectedValue = document.getElementById("imperialSize").value;
-            const [diameter, tpi] = selectedValue.split(",");
-            const threadType = document.getElementById("imperialThreadType").value;
+        function calculate() {
+            const d = parseFloat(document.getElementById('diameter').value);
+            const p = parseFloat(document.getElementById('pitch').value);
+            const pct = parseFloat(document.getElementById('percentage').value);
             
-            let threadPercentage;
-            switch(threadType) {
-                case "tight":
-                    threadPercentage = 0.85;
-                    break;
-                case "loose":
-                    threadPercentage = 0.65;
-                    break;
-                default:
-                    threadPercentage = 0.75;
-            }
-            
-            // 計算攻牙孔徑（英制）= 外徑 - (1/TPI * 螺紋百分比)
-            const drillSize = (parseFloat(diameter) - ((1/parseFloat(tpi)) * threadPercentage)).toFixed(4);
-            
-            // 尋找最接近的標準鑽頭尺寸
-            let closestSize = findClosestDrillSize(drillSize);
-            
-            // 顯示結果
-            const screwSize = document.getElementById("imperialSize").options[document.getElementById("imperialSize").selectedIndex].text;
-            document.getElementById("imperialResult").innerHTML = `
-                ${screwSize} 螺絲的攻牙孔徑為：${drillSize}"<br>
-                建議使用鑽頭尺寸：${closestSize}<br>
-                <small>（基於${threadPercentage*100}%螺紋深度）</small>
-            `;
-        }
+            if (isNaN(p) || p <= 0) return;
 
-        function findClosestDrillSize(decimal) {
-            // 簡化的標準鑽頭尺寸表（實際應用中可能需要更完整的表格）
-            const standardDrills = [
-                {size: "1/64", decimal: 0.0156},
-                {size: "1/32", decimal: 0.0313},
-                {size: "3/64", decimal: 0.0469},
-                {size: "#55", decimal: 0.0520},
-                {size: "#54", decimal: 0.0550},
-                {size: "#53", decimal: 0.0595},
-                {size: "1/16", decimal: 0.0625},
-                {size: "#51", decimal: 0.0670},
-                {size: "#49", decimal: 0.0730},
-                {size: "5/64", decimal: 0.0781},
-                {size: "#46", decimal: 0.0810},
-                {size: "#45", decimal: 0.0820},
-                {size: "#44", decimal: 0.0860},
-                {size: "#43", decimal: 0.0890},
-                {size: "#42", decimal: 0.0935},
-                {size: "3/32", decimal: 0.0938},
-                {size: "#40", decimal: 0.0980},
-                {size: "#39", decimal: 0.0995},
-                {size: "#38", decimal: 0.1015},
-                {size: "#36", decimal: 0.1065},
-                {size: "#33", decimal: 0.1130},
-                {size: "1/8", decimal: 0.1250},
-                {size: "#30", decimal: 0.1285},
-                {size: "#29", decimal: 0.1360},
-                {size: "#25", decimal: 0.1495},
-                {size: "#21", decimal: 0.1590},
-                {size: "11/64", decimal: 0.1719},
-                {size: "#16", decimal: 0.1770},
-                {size: "#13", decimal: 0.1850},
-                {size: "3/16", decimal: 0.1875},
-                {size: "#11", decimal: 0.1910},
-                {size: "#7", decimal: 0.2010},
-                {size: "13/64", decimal: 0.2031},
-                {size: "#3", decimal: 0.2130},
-                {size: "7/32", decimal: 0.2188},
-                {size: "#1", decimal: 0.2280},
-                {size: "A", decimal: 0.2340},
-                {size: "15/64", decimal: 0.2344},
-                {size: "B", decimal: 0.2380},
-                {size: "C", decimal: 0.2420},
-                {size: "1/4", decimal: 0.2500},
-                {size: "F", decimal: 0.2570},
-                {size: "9/32", decimal: 0.2813},
-                {size: "5/16", decimal: 0.3125},
-                {size: "21/64", decimal: 0.3281},
-                {size: "11/32", decimal: 0.3438},
-                {size: "23/64", decimal: 0.3594},
-                {size: "3/8", decimal: 0.3750},
-                {size: "25/64", decimal: 0.3906},
-                {size: "13/32", decimal: 0.4063},
-                {size: "27/64", decimal: 0.4219},
-                {size: "7/16", decimal: 0.4375},
-                {size: "29/64", decimal: 0.4531},
-                {size: "15/32", decimal: 0.4688},
-                {size: "31/64", decimal: 0.4844},
-                {size: "1/2", decimal: 0.5000},
-                {size: "17/32", decimal: 0.5313},
-                {size: "9/16", decimal: 0.5625},
-                {size: "19/32", decimal: 0.5938},
-                {size: "5/8", decimal: 0.6250},
-                {size: "21/32", decimal: 0.6563},
-                {size: "11/16", decimal: 0.6875},
-                {size: "23/32", decimal: 0.7188},
-                {size: "3/4", decimal: 0.7500},
-                {size: "25/32", decimal: 0.7813},
-                {size: "13/16", decimal: 0.8125},
-                {size: "27/32", decimal: 0.8438},
-                {size: "7/8", decimal: 0.8750},
-                {size: "29/32", decimal: 0.9063},
-                {size: "15/16", decimal: 0.9375},
-                {size: "31/32", decimal: 0.9688},
-                {size: "1", decimal: 1.0000}
-            ];
+            const result = d - (p * pct);
             
-            const decimalValue = parseFloat(decimal);
-            let closest = standardDrills[0];
-            let minDifference = Math.abs(decimalValue - standardDrills[0].decimal);
-            
-            for (let i = 1; i < standardDrills.length; i++) {
-                const drill = standardDrills[i];
-                const difference = Math.abs(decimalValue - drill.decimal);
-                
-                if (difference < minDifference) {
-                    minDifference = difference;
-                    closest = drill;
-                }
-            }
-            
-            return `${closest.size} (${closest.decimal}")`;
+            document.getElementById('result-display').innerText = result.toFixed(2) + " mm";
+            document.getElementById('result-area').style.display = 'block';
         }
-        
-        // 預設載入時直接計算
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('metricDiameter').value = '3';
-            document.getElementById('metricPitch').value = '0.5';
-            calculateMetricDrillSize();
-        });
     </script>
 </body>
 </html>
